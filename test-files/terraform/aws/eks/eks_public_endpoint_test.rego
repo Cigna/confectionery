@@ -1,0 +1,465 @@
+# Rego test for EKS Public Endpoint 
+# Validating rule eks_public_endpoint: Deny eks endpoints that are made public via vpc_vonfig
+
+package rules.eks_public_endpoint
+
+import data.fugue.resource_view.resource_view_input
+
+mock_input = ret {
+	ret = resource_view_input with input as mock_plan_input
+}
+
+test_eks_public_endpoint {
+	pol := policy with input as mock_input
+	resources := {p.id: p.valid | pol[p]}
+
+	resources["aws_eks_cluster.invalid_public"] == false
+	resources["aws_eks_cluster.valid_private"] == true
+}
+
+# Mock input is generated plan for eks_public_endpoint.tf
+mock_plan_input = {
+	"format_version": "0.1",
+	"terraform_version": "0.12.28",
+	"planned_values": {
+		"outputs": {
+			"endpoint": {"sensitive": false},
+			"kubeconfig-certificate-authority-data": {"sensitive": false},
+		},
+		"root_module": {"resources": [
+			{
+				"address": "aws_eks_cluster.invalid_public",
+				"mode": "managed",
+				"type": "aws_eks_cluster",
+				"name": "invalid_public",
+				"provider_name": "aws",
+				"schema_version": 0,
+				"values": {
+					"enabled_cluster_log_types": null,
+					"encryption_config": [],
+					"name": "example",
+					"tags": null,
+					"timeouts": null,
+					"vpc_config": [{
+						"endpoint_private_access": false,
+						"endpoint_public_access": true,
+						"security_group_ids": null,
+					}],
+				},
+			},
+			{
+				"address": "aws_eks_cluster.valid_private",
+				"mode": "managed",
+				"type": "aws_eks_cluster",
+				"name": "valid_private",
+				"provider_name": "aws",
+				"schema_version": 0,
+				"values": {
+					"enabled_cluster_log_types": null,
+					"encryption_config": [],
+					"name": "example",
+					"tags": null,
+					"timeouts": null,
+					"vpc_config": [{
+						"endpoint_private_access": true,
+						"endpoint_public_access": false,
+						"security_group_ids": null,
+					}],
+				},
+			},
+			{
+				"address": "aws_iam_role.example",
+				"mode": "managed",
+				"type": "aws_iam_role",
+				"name": "example",
+				"provider_name": "aws",
+				"schema_version": 0,
+				"values": {
+					"assume_role_policy": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}\n",
+					"description": null,
+					"force_detach_policies": false,
+					"max_session_duration": 3600,
+					"name": "test_role",
+					"name_prefix": null,
+					"path": "/",
+					"permissions_boundary": null,
+					"tags": {"tag-key": "tag-value"},
+				},
+			},
+			{
+				"address": "aws_subnet.example1",
+				"mode": "managed",
+				"type": "aws_subnet",
+				"name": "example1",
+				"provider_name": "aws",
+				"schema_version": 1,
+				"values": {
+					"assign_ipv6_address_on_creation": false,
+					"cidr_block": "10.0.1.0/24",
+					"map_public_ip_on_launch": false,
+					"outpost_arn": null,
+					"tags": {"Name": "Main"},
+					"timeouts": null,
+				},
+			},
+			{
+				"address": "aws_subnet.example2",
+				"mode": "managed",
+				"type": "aws_subnet",
+				"name": "example2",
+				"provider_name": "aws",
+				"schema_version": 1,
+				"values": {
+					"assign_ipv6_address_on_creation": false,
+					"cidr_block": "10.0.1.0/24",
+					"map_public_ip_on_launch": false,
+					"outpost_arn": null,
+					"tags": {"Name": "Main"},
+					"timeouts": null,
+				},
+			},
+			{
+				"address": "aws_vpc.main",
+				"mode": "managed",
+				"type": "aws_vpc",
+				"name": "main",
+				"provider_name": "aws",
+				"schema_version": 1,
+				"values": {
+					"assign_generated_ipv6_cidr_block": false,
+					"cidr_block": "10.0.0.0/16",
+					"enable_dns_support": true,
+					"instance_tenancy": "default",
+					"tags": {"Name": "main"},
+				},
+			},
+		]},
+	},
+	"resource_changes": [
+		{
+			"address": "aws_eks_cluster.invalid_public",
+			"mode": "managed",
+			"type": "aws_eks_cluster",
+			"name": "invalid_public",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"enabled_cluster_log_types": null,
+					"encryption_config": [],
+					"name": "example",
+					"tags": null,
+					"timeouts": null,
+					"vpc_config": [{
+						"endpoint_private_access": false,
+						"endpoint_public_access": true,
+						"security_group_ids": null,
+					}],
+				},
+				"after_unknown": {
+					"arn": true,
+					"certificate_authority": true,
+					"created_at": true,
+					"encryption_config": [],
+					"endpoint": true,
+					"id": true,
+					"identity": true,
+					"platform_version": true,
+					"role_arn": true,
+					"status": true,
+					"version": true,
+					"vpc_config": [{
+						"cluster_security_group_id": true,
+						"public_access_cidrs": true,
+						"subnet_ids": true,
+						"vpc_id": true,
+					}],
+				},
+			},
+		},
+		{
+			"address": "aws_eks_cluster.valid_private",
+			"mode": "managed",
+			"type": "aws_eks_cluster",
+			"name": "valid_private",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"enabled_cluster_log_types": null,
+					"encryption_config": [],
+					"name": "example",
+					"tags": null,
+					"timeouts": null,
+					"vpc_config": [{
+						"endpoint_private_access": true,
+						"endpoint_public_access": false,
+						"security_group_ids": null,
+					}],
+				},
+				"after_unknown": {
+					"arn": true,
+					"certificate_authority": true,
+					"created_at": true,
+					"encryption_config": [],
+					"endpoint": true,
+					"id": true,
+					"identity": true,
+					"platform_version": true,
+					"role_arn": true,
+					"status": true,
+					"version": true,
+					"vpc_config": [{
+						"cluster_security_group_id": true,
+						"public_access_cidrs": true,
+						"subnet_ids": true,
+						"vpc_id": true,
+					}],
+				},
+			},
+		},
+		{
+			"address": "aws_iam_role.example",
+			"mode": "managed",
+			"type": "aws_iam_role",
+			"name": "example",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"assume_role_policy": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}\n",
+					"description": null,
+					"force_detach_policies": false,
+					"max_session_duration": 3600,
+					"name": "test_role",
+					"name_prefix": null,
+					"path": "/",
+					"permissions_boundary": null,
+					"tags": {"tag-key": "tag-value"},
+				},
+				"after_unknown": {
+					"arn": true,
+					"create_date": true,
+					"id": true,
+					"tags": {},
+					"unique_id": true,
+				},
+			},
+		},
+		{
+			"address": "aws_subnet.example1",
+			"mode": "managed",
+			"type": "aws_subnet",
+			"name": "example1",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"assign_ipv6_address_on_creation": false,
+					"cidr_block": "10.0.1.0/24",
+					"map_public_ip_on_launch": false,
+					"outpost_arn": null,
+					"tags": {"Name": "Main"},
+					"timeouts": null,
+				},
+				"after_unknown": {
+					"arn": true,
+					"availability_zone": true,
+					"availability_zone_id": true,
+					"id": true,
+					"ipv6_cidr_block": true,
+					"ipv6_cidr_block_association_id": true,
+					"owner_id": true,
+					"tags": {},
+					"vpc_id": true,
+				},
+			},
+		},
+		{
+			"address": "aws_subnet.example2",
+			"mode": "managed",
+			"type": "aws_subnet",
+			"name": "example2",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"assign_ipv6_address_on_creation": false,
+					"cidr_block": "10.0.1.0/24",
+					"map_public_ip_on_launch": false,
+					"outpost_arn": null,
+					"tags": {"Name": "Main"},
+					"timeouts": null,
+				},
+				"after_unknown": {
+					"arn": true,
+					"availability_zone": true,
+					"availability_zone_id": true,
+					"id": true,
+					"ipv6_cidr_block": true,
+					"ipv6_cidr_block_association_id": true,
+					"owner_id": true,
+					"tags": {},
+					"vpc_id": true,
+				},
+			},
+		},
+		{
+			"address": "aws_vpc.main",
+			"mode": "managed",
+			"type": "aws_vpc",
+			"name": "main",
+			"provider_name": "aws",
+			"change": {
+				"actions": ["create"],
+				"before": null,
+				"after": {
+					"assign_generated_ipv6_cidr_block": false,
+					"cidr_block": "10.0.0.0/16",
+					"enable_dns_support": true,
+					"instance_tenancy": "default",
+					"tags": {"Name": "main"},
+				},
+				"after_unknown": {
+					"arn": true,
+					"default_network_acl_id": true,
+					"default_route_table_id": true,
+					"default_security_group_id": true,
+					"dhcp_options_id": true,
+					"enable_classiclink": true,
+					"enable_classiclink_dns_support": true,
+					"enable_dns_hostnames": true,
+					"id": true,
+					"ipv6_association_id": true,
+					"ipv6_cidr_block": true,
+					"main_route_table_id": true,
+					"owner_id": true,
+					"tags": {},
+				},
+			},
+		},
+	],
+	"output_changes": {
+		"endpoint": {
+			"actions": ["create"],
+			"before": null,
+			"after_unknown": true,
+		},
+		"kubeconfig-certificate-authority-data": {
+			"actions": ["create"],
+			"before": null,
+			"after_unknown": true,
+		},
+	},
+	"configuration": {
+		"provider_config": {"aws": {
+			"name": "aws",
+			"expressions": {
+				"profile": {"constant_value": "saml"},
+				"region": {"constant_value": "us-east-1"},
+				"shared_credentials_file": {"constant_value": "~/.aws/creds"},
+			},
+		}},
+		"root_module": {
+			"outputs": {
+				"endpoint": {"expression": {"references": ["aws_eks_cluster.valid_private"]}},
+				"kubeconfig-certificate-authority-data": {"expression": {"references": ["aws_eks_cluster.valid_private"]}},
+			},
+			"resources": [
+				{
+					"address": "aws_eks_cluster.invalid_public",
+					"mode": "managed",
+					"type": "aws_eks_cluster",
+					"name": "invalid_public",
+					"provider_config_key": "aws",
+					"expressions": {
+						"name": {"constant_value": "example"},
+						"role_arn": {"references": ["aws_iam_role.example"]},
+						"vpc_config": [{"subnet_ids": {"references": [
+							"aws_subnet.example1",
+							"aws_subnet.example2",
+						]}}],
+					},
+					"schema_version": 0,
+				},
+				{
+					"address": "aws_eks_cluster.valid_private",
+					"mode": "managed",
+					"type": "aws_eks_cluster",
+					"name": "valid_private",
+					"provider_config_key": "aws",
+					"expressions": {
+						"name": {"constant_value": "example"},
+						"role_arn": {"references": ["aws_iam_role.example"]},
+						"vpc_config": [{
+							"endpoint_private_access": {"constant_value": true},
+							"endpoint_public_access": {"constant_value": false},
+							"subnet_ids": {"references": [
+								"aws_subnet.example1",
+								"aws_subnet.example2",
+							]},
+						}],
+					},
+					"schema_version": 0,
+				},
+				{
+					"address": "aws_iam_role.example",
+					"mode": "managed",
+					"type": "aws_iam_role",
+					"name": "example",
+					"provider_config_key": "aws",
+					"expressions": {
+						"assume_role_policy": {"constant_value": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}\n"},
+						"name": {"constant_value": "test_role"},
+						"tags": {"constant_value": {"tag-key": "tag-value"}},
+					},
+					"schema_version": 0,
+				},
+				{
+					"address": "aws_subnet.example1",
+					"mode": "managed",
+					"type": "aws_subnet",
+					"name": "example1",
+					"provider_config_key": "aws",
+					"expressions": {
+						"cidr_block": {"constant_value": "10.0.1.0/24"},
+						"tags": {"constant_value": {"Name": "Main"}},
+						"vpc_id": {"references": ["aws_vpc.main"]},
+					},
+					"schema_version": 1,
+				},
+				{
+					"address": "aws_subnet.example2",
+					"mode": "managed",
+					"type": "aws_subnet",
+					"name": "example2",
+					"provider_config_key": "aws",
+					"expressions": {
+						"cidr_block": {"constant_value": "10.0.1.0/24"},
+						"tags": {"constant_value": {"Name": "Main"}},
+						"vpc_id": {"references": ["aws_vpc.main"]},
+					},
+					"schema_version": 1,
+				},
+				{
+					"address": "aws_vpc.main",
+					"mode": "managed",
+					"type": "aws_vpc",
+					"name": "main",
+					"provider_config_key": "aws",
+					"expressions": {
+						"cidr_block": {"constant_value": "10.0.0.0/16"},
+						"instance_tenancy": {"constant_value": "default"},
+						"tags": {"constant_value": {"Name": "main"}},
+					},
+					"schema_version": 1,
+				},
+			],
+		},
+	},
+}

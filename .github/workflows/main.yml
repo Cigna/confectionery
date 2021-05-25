@@ -1,0 +1,16 @@
+on: [pull_request, push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Confectionery Integration Checks
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: |
+        go get github.com/open-policy-agent/opa
+        go install github.com/open-policy-agent/opa
+    - run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+    - run: ./scripts/check-naming.sh
+    - run: ./scripts/opa-format.sh
+    - run: opa test rules test-files
