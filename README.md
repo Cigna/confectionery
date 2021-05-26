@@ -79,7 +79,7 @@ To see available tags please click on [Releases](https://github.com/cigna/confec
 
 ### How to Use Exceptions
 
-If it is necessary to temporarily suppress a rule while waiting for a fix to be added to the library, or a non-fixable false-positive exists then exceptions can be used. We have adopted Regula's feature for exceptions which is referenced [here](https://github.com/fugue/regula#waiving-rule-results).
+If it is necessary to temporarily suppress a rule while waiting for a fix to be added to the library, or a non-fixable false-positive exists then exceptions can be used. We have adopted Regula's feature for exceptions which is detailed [here](https://regula.dev/configuration.html#waiving-rule-results).
 
 When using exceptions with Conftest, the `test` command can be modified to the following format
 
