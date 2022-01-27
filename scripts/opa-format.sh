@@ -7,7 +7,7 @@ NC='\033[0m'
 
 # Quick test that checks opa format.
 if [[ $(opa fmt -l rules/terraform/ test-files) ]]; then
-    opa fmt -l terraform/ test-files
+    opa fmt -l rules/terraform/ test-files
     1>&2 echo -e "${ORANGE}> Run \`opa fmt -w rules/terraform/ test-files/\` to format rego files.${NC}"
     exit 1
 else
