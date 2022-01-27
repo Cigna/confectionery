@@ -74,9 +74,9 @@ planned_values_module_resources_walk_path(path) {
 	# indices must be numbers, etc).
 	len = count(path)
 	len >= 3
-	path[minus(len, 1)] == "resources"
-	is_number(path[minus(len, 2)])
-	path[minus(len, 3)] == "child_modules"
+	path[len - 1] == "resources"
+	is_number(path[len - 2])
+	path[len - 3] == "child_modules"
 }
 
 # Return an empty object for resources without values
@@ -95,7 +95,7 @@ planned_values_resources = {id: ret |
 	#retain orignal id for use cases that require it
 	_id = object.get(resource.values, "id", "")
 	split_provider = split(resource.provider_name, "/")
-	provider = split_provider[minus(count(split_provider), 1)]
+	provider = split_provider[count(split_provider) - 1]
 	ret = json.patch(resource_values(resource), [
 		{"op": "add", "path": ["id"], "value": id},
 		{"op": "add", "path": ["_type"], "value": resource.type},

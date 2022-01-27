@@ -25,7 +25,7 @@ vpcs = fugue.resources("aws_vpc")
 is_valid_vpc(vpc) {
 	# Compare arn with vpc_id (Added for golden vpc)
 	arn_array := split(vpc.arn, "/")
-	vpc_id := arn_array[minus(count(arn_array), 1)]
+	vpc_id := arn_array[count(arn_array) - 1]
 	vpc_id == flow_logs[_].vpc_id
 }
 
