@@ -6,11 +6,7 @@ jobs:
     name: Confectionery Integration Checks
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
-    - run: |
-        go get github.com/open-policy-agent/opa
-        go install github.com/open-policy-agent/opa
-    - run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+    - uses: open-policy-agent/setup-opa@v1
     - run: ./scripts/check-naming.sh
     - run: ./scripts/opa-format.sh
     - run: opa test rules test-files
